@@ -3,9 +3,10 @@
 
 #include <bits/stdc++.h>
 #include "card.h"
+#include "group.h"
 
 using namespace std;
 
-vector< pair<Card, int> > aSolve(vector<Card> cards);
+vector<Group> aSolve(vector<Card> cards);
 
 #endif // ASTAR_H

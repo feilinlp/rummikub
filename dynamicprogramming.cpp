@@ -1,11 +1,12 @@
 #include <bits/stdc++.h>
 #include "dynamicprogramming.h"
 #include "card.h"
+#include "group.h"
 
 using namespace std;
 
-vector< pair<Card, int> > dpSolve(vector<Card> cards) {
-    vector< pair<Card, int> > groups;
+vector<Group> dpSolve(vector<Card> cards) {
+    vector<Group> groups;
 
     return groups;
 }

@@ -3,9 +3,10 @@
 
 #include <bits/stdc++.h>
 #include "card.h"
+#include "group.h"
 
 using namespace std;
 
-vector< pair<Card, int> > dpSolve(vector<Card> cards);
+vector<Group> dpSolve(vector<Card> cards);
 
 #endif // DYNAMICPROGRAMMING_H

@@ -3,9 +3,11 @@
 
 #include <bits/stdc++.h>
 
+using namespace std;
+
 struct Card {
-    int number;
-    std::string color;
+    char number;
+    string color;
 
     bool operator==(const Card& r) const {
         return (this->number == r.number) && (this->color == r.color);

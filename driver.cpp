@@ -1,5 +1,6 @@
 #include <bits/stdc++.h>
 #include "card.h"
+#include "group.h"
 #include "bruteforce.h"
 #include "dynamicprogramming.h"
 #include "astar.h"
@@ -32,8 +33,7 @@ void menu() {
     cout << "Select Action: ";
 }
 
-void display() {
-    cout << "Existing Cards: ";
+void display(vector<Card> cards) {
     for (auto card: cards) {
         setColor(card.color);
         cout << card.number << " ";
@@ -43,9 +43,15 @@ void display() {
     setColor();
 }
 
+void showResult(vector<Group> groups) {
+    for (int i = 0; i < groups.size(); i++) {
+        display(groups[i].cards);
+    }
+}
+
 void process(int action) {
     if (action == 1) {
-        int number;
+        char number;
         string color;
 
         cout << "Enter the number: ";
@@ -60,9 +66,9 @@ void process(int action) {
         setColor();
         cout << "is added." << endl;
     } else if (action == 2) {
-        display();
+        display(cards);
 
-        int number;
+        char number;
         string color;
         cout << "Card number to remove: ";
         cin >> number;
@@ -83,20 +89,21 @@ void process(int action) {
         }
     } else if (action == 3) {
         // To solve with Brute Force
-        vector< pair<Card, int> > groups = bfSolve(cards);
+        vector<Group> groups = bfSolve(cards);
 
         // To solve with DP / dynamic programming
-        // vector< pair<Card, int> > groups = dpSolve(cards);
+        // vector<Group> groups = dpSolve(cards);
 
         // To solve with A*
-        // vector< pair<Card, int> > groups = aSolve(cards);
-
+        // vector<Group> groups = aSolve(cards);
+        
+        showResult(groups);
     } else if (action == 4) {
         sort(cards.begin(), cards.end(), commonSort);
-        display();
+        display(cards);
     } else if (action == 5) {
         sort(cards.begin(), cards.end(), sequenceSort);
-        display();
+        display(cards);
     }
 }
 

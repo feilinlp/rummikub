@@ -3,9 +3,10 @@
 
 #include <bits/stdc++.h>
 #include "card.h"
+#include "group.h"
 
 using namespace std;
 
-vector< pair<Card, int> > bfSolve(vector<Card> cards);
+vector<Group> bfSolve(vector<Card> cards);
 
 #endif // BRUTEFORCE_H
