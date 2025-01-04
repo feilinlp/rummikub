@@ -7,6 +7,6 @@
 
 using namespace std;
 
-vector<Group> dpSolve(vector<Card> cards);
+pair< vector<Group>, vector<Card> > dpSolve(vector<Card> cards);
 
 #endif // DYNAMICPROGRAMMING_H

@@ -51,7 +51,7 @@ void showResult(vector<Group> groups) {
 
 void process(int action) {
     if (action == 1) {
-        char number;
+        int number;
         string color;
 
         cout << "Enter the number: ";
@@ -68,7 +68,7 @@ void process(int action) {
     } else if (action == 2) {
         display(cards);
 
-        char number;
+        int number;
         string color;
         cout << "Card number to remove: ";
         cin >> number;
@@ -89,7 +89,7 @@ void process(int action) {
         }
     } else if (action == 3) {
         // To solve with Brute Force
-        vector<Group> groups = bfSolve(cards);
+        pair< vector<Group>, vector<Card> > result = bfSolve(cards);
 
         // To solve with DP / dynamic programming
         // vector<Group> groups = dpSolve(cards);
@@ -97,7 +97,8 @@ void process(int action) {
         // To solve with A*
         // vector<Group> groups = aSolve(cards);
         
-        showResult(groups);
+        showResult(result.first);
+        display(result.second);
     } else if (action == 4) {
         sort(cards.begin(), cards.end(), commonSort);
         display(cards);

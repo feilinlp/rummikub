@@ -7,6 +7,6 @@
 
 using namespace std;
 
-vector<Group> bfSolve(vector<Card> cards);
+pair< vector<Group>, vector<Card> > bfSolve(vector<Card> cards);
 
 #endif // BRUTEFORCE_H

@@ -7,6 +7,6 @@
 
 using namespace std;
 
-vector<Group> aSolve(vector<Card> cards);
+pair< vector<Group>, vector<Card> > aSolve(vector<Card> cards);
 
 #endif // ASTAR_H

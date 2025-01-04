@@ -5,8 +5,8 @@
 
 using namespace std;
 
-vector<Group> dpSolve(vector<Card> cards) {
+pair< vector<Group>, vector<Card> > dpSolve(vector<Card> cards) {
     vector<Group> groups;
 
-    return groups;
+    return make_pair(groups, cards);
 }
