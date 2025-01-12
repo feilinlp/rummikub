@@ -44,42 +44,68 @@ struct Group {
         return false;
     }
 
-    pair< vector<Group>, vector<Card> > remove(Card card) {
+    template<typename... Cards>
+    pair<vector<Group>, vector<Card>> remove(Cards... cardsToRemove) {
         vector<Group> groups;
         vector<Card> remaining;
 
-        int index = find(cards.begin(), cards.end(), card) - cards.begin();
+        // Helper lambda to remove a single card
+        auto removeCard = [this](const Card& card) {
+            auto it = find(cards.begin(), cards.end(), card);
+            if (it != cards.end()) {
+                cards.erase(it);
+            }
+        };
 
-        if (cards[0].number == cards[1].number && cards.size() > 3) {
-            cards.erase(cards.begin() + index);
-            groups.push_back(*this);
-            return make_pair(groups, remaining);
-        } else if (cards[0].number == cards[1].number && cards.size() <= 3) {
-            cards.erase(cards.begin() + index);
+        // Remove each card in the variadic arguments
+        (removeCard(cardsToRemove), ...);
+
+        if (cards[0].number == cards[1].number) {
+            if (this->isValid()) {
+                Group add;
+                copy(cards.begin(), cards.end(), back_inserter(add.cards));
+                groups.push_back(add);
+                return make_pair(groups, remaining);
+            }
             return make_pair(groups, cards);
-        }
-        else {
+        } else {
             sort(cards.begin(), cards.end(), sequenceSort);
-            if (cards.size() - index - 1 >= 3) {
-                Group right;
-                for (int i = cards.size() - 1; i > index; i--) {
-                    right.cards.push_back(cards[i]);
-                    cards.erase(cards.begin() + i);
-                }
-                groups.push_back(right);
+            int count = 1;
+            for (int i = cards.size() - 2; i >= 0; i--) {
+                if (cards[i].number == cards[i+1].number - 1) {
+                    count += 1;
+                } else {
+                    if (count >= 3) {
+                        Group insert;
+                        for (int j = i + count; j > i; j--) {
+                            insert.cards.push_back(cards[j]);
+                        }
+                        count = 1;
+                        groups.push_back(insert);
+                    } else {
+                        for (int j = i + count; j > i; j--) {
+                            remaining.push_back(cards[j]);
+                        }
+                        count = 1;
+                    }
+                } 
             }
 
-            cards.erase(cards.begin() + index);
-
-            if (index >= 3) {
-                Group left;
-                for (int i = 0; i < index; i++) {
-                    left.cards.push_back(cards[i]);
-                    cards.erase(cards.begin() + i);
+            if (count >= 3) {
+                Group insert;
+                for (int j = count - 1; j >= 0; j--) {
+                    insert.cards.push_back(cards[j]);
                 }
-                groups.push_back(left);
+                count = 1;
+                groups.push_back(insert);
+            } else {
+                for (int j = count - 1; j >= 0; j--) {
+                    remaining.push_back(cards[j]);
+                }
+                count = 1;
             }
-            return make_pair(groups, cards);
+
+            return make_pair(groups, remaining);
         }
     }
 

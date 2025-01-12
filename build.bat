@@ -1,6 +1,6 @@
 @echo off
 rem Compile all .cpp files in the current directory
-g++ *.cpp -o rummikub
+g++ -std=c++17 *.cpp -o rummikub
 
 rem Check if the compilation was successful
 if %errorlevel%==0 (

@@ -53,11 +53,15 @@ bool attach(vector<Group> &groups, Card card) {
     return false;
 }
 
-pair< bool, pair< vector<Group>, vector<Card> > > attempt(vector<Card> &attempts, vector<Group> &groups, vector<Card> &cards, int index) {  
-    // Try to merge groups that can be connected.
-    merge(groups);
+vector<Card> removeFromGroup(vector<Group> &groups, int group, Card card) {
+    Group replace = groups[group];
+    groups.erase(groups.begin() + group);
 
-    cout << "Attempting" << cards[index].number << cards[index].color << endl;
+    // Check if still a valid group, else need to iterate for the elements.
+    pair< vector<Group>, vector<Card> > replaced = replace.remove(card); 
+
+    // If remaining forms any group, leave as it is.
+    groups.insert(groups.end(), replaced.first.begin(), replaced.first.end());
 
     cout << "Groups" << endl;
     for (int k = 0; k < groups.size(); k++) {
@@ -66,11 +70,28 @@ pair< bool, pair< vector<Group>, vector<Card> > > attempt(vector<Card> &attempts
         }
         cout << endl;
     }
-    cout << "Cards" << endl;
-    for (int j = 0; j < cards.size(); j++) {
-        cout << cards[j].number << cards[j].color << " ";
-    }
-    cout << endl;
+
+    return replaced.second;
+}
+
+pair< bool, pair< vector<Group>, vector<Card> > > attempt(vector<Card> &attempts, vector<Group> &groups, vector<Card> &cards, int index) {  
+    // Try to merge groups that can be connected.
+    merge(groups);
+
+    // cout << "Attempting" << cards[index].number << cards[index].color << endl;
+
+    // cout << "Groups" << endl;
+    // for (int k = 0; k < groups.size(); k++) {
+    //     for (int j = 0; j < groups[k].cards.size(); j++) {
+    //         cout << groups[k].cards[j].number << groups[k].cards[j].color << " ";
+    //     }
+    //     cout << endl;
+    // }
+    // cout << "Cards" << endl;
+    // for (int j = 0; j < cards.size(); j++) {
+    //     cout << cards[j].number << cards[j].color << " ";
+    // }
+    // cout << endl;
 
     // If  card is attachable to a group, return true.
     if (attach(groups, cards[index])) {
@@ -121,6 +142,7 @@ pair< bool, pair< vector<Group>, vector<Card> > > attempt(vector<Card> &attempts
             }
         }
 
+        // Swap first and second card if secondCard is on hand but firstCard is on board.
         if (secondCard != cards.size() && firstCard == cards.size()) {
             int tempCard = firstCard;
             firstCard = secondCard;
@@ -138,16 +160,19 @@ pair< bool, pair< vector<Group>, vector<Card> > > attempt(vector<Card> &attempts
             second = temp;
         }
     
-        // cout << "Required " << firstCard << secondCard << endl;
-        // cout << "First Group " << endl;
-        // for (int j = 0; j < firstGroup.size(); j++) {
-        //     cout << firstGroup[j] << " ";
-        // }
-        // cout << "\nSecond Group " << endl;
-        // for (int j = 0; j < secondGroup.size(); j++) {
-        //     cout << secondGroup[j] << " ";
-        // }
-        // cout << endl;
+        sort(firstGroup.begin(), firstGroup.end());
+        sort(secondGroup.begin(), secondGroup.end());
+
+        cout << "Required " << firstCard << secondCard << endl;
+        cout << "First Group " << endl;
+        for (int j = 0; j < firstGroup.size(); j++) {
+            cout << firstGroup[j] << " ";
+        }
+        cout << "\nSecond Group " << endl;
+        for (int j = 0; j < secondGroup.size(); j++) {
+            cout << secondGroup[j] << " ";
+        }
+        cout << endl;
 
         // If there is a ready combination from hand.
         if (firstCard != cards.size() && secondCard != cards.size()) {
@@ -171,20 +196,23 @@ pair< bool, pair< vector<Group>, vector<Card> > > attempt(vector<Card> &attempts
 
             return make_pair(true, make_pair(groups, cards));
         } else if (firstCard != cards.size() && secondCard == cards.size()) {
+            // Take first card from the available hand.
             cards.erase(cards.begin() + firstCard);
+
+            // Iterate through the groups that contain the second required card.
             for (int j = 0; j < secondGroup.size(); j++) {
-                cout << "Inner Groups" << endl;
-                for (int k = 0; k < groups.size(); k++) {
-                    for (int l = 0; l < groups[k].cards.size(); l++) {
-                        cout << groups[k].cards[l].number << groups[k].cards[l].color << " ";
-                    }
-                    cout << endl;
-                }
-                cout << "Inner Cards" << endl;
-                for (int l = 0; l < cards.size(); l++) {
-                    cout << cards[l].number << cards[l].color << " ";
-                }
-                cout << endl;
+                // cout << "Inner Groups" << endl;
+                // for (int k = 0; k < groups.size(); k++) {
+                //     for (int l = 0; l < groups[k].cards.size(); l++) {
+                //         cout << groups[k].cards[l].number << groups[k].cards[l].color << " ";
+                //     }
+                //     cout << endl;
+                // }
+                // cout << "Inner Cards" << endl;
+                // for (int l = 0; l < cards.size(); l++) {
+                //     cout << cards[l].number << cards[l].color << " ";
+                // }
+                // cout << endl;
 
                 // Create a copy in case it is not possible to form sets
                 vector<Group> groupsCopy;
@@ -193,56 +221,53 @@ pair< bool, pair< vector<Group>, vector<Card> > > attempt(vector<Card> &attempts
                 copy(groups.begin(), groups.end(), back_inserter(groupsCopy));
                 copy(cards.begin(), cards.end(), back_inserter(cardsCopy));
 
-                Group replace = groupsCopy[secondGroup[j]];
-                groupsCopy.erase(groupsCopy.begin() + secondGroup[j]);
+                vector<Card> replaced = removeFromGroup(groupsCopy, secondGroup[j], second);
 
-                // Check if still a valid group, else need to iterate for the elements.
-                pair< vector<Group>, vector<Card> > replaced = replace.remove(second); 
+                // cout << "Inner Groups" << endl;
+                // for (int k = 0; k < groups.size(); k++) {
+                //     for (int l = 0; l < groups[k].cards.size(); l++) {
+                //         cout << groups[k].cards[l].number << groups[k].cards[l].color << " ";
+                //     }
+                //     cout << endl;
+                // }
+                // cout << "Inner Cards" << endl;
+                // for (int l = 0; l < cards.size(); l++) {
+                //     cout << cards[l].number << cards[l].color << " ";
+                // }
+                // cout << endl;
 
-                groupsCopy.insert(groupsCopy.end(), replaced.first.begin(), replaced.first.end());
+                pair< bool, pair< vector<Group>, vector<Card> > > result = make_pair(true, make_pair(groupsCopy, cardsCopy));
 
-                cout << "Inner Groups" << endl;
-                for (int k = 0; k < groups.size(); k++) {
-                    for (int l = 0; l < groups[k].cards.size(); l++) {
-                        cout << groups[k].cards[l].number << groups[k].cards[l].color << " ";
-                    }
-                    cout << endl;
-                }
-                cout << "Inner Cards" << endl;
-                for (int l = 0; l < cards.size(); l++) {
-                    cout << cards[l].number << cards[l].color << " ";
-                }
-                cout << endl;
-
-                pair< bool, pair< vector<Group>, vector<Card> > > result;
-
-                vector<int> counts(replaced.second.size());
-                for (int k = 0; k < replaced.second.size(); k++) {
-                    counts[k] = count(cardsCopy.begin(), cardsCopy.end(), replaced.second[k]);
+                // Keep track of the number of each card in hand.
+                vector<int> counts(replaced.size());
+                for (int k = 0; k < replaced.size(); k++) {
+                    counts[k] = count(cardsCopy.begin(), cardsCopy.end(), replaced[k]);
                 }
 
-                for (int k = 0; k < replaced.second.size(); k++) {
-                    cardsCopy.push_back(replaced.second[k]);
+                // Attempt to place the replaced cards on the board.
+                for (int k = 0; k < replaced.size(); k++) {
+                    cardsCopy.push_back(replaced[k]);
                     result = attempt(attempts, groupsCopy, cardsCopy, cardsCopy.size() - 1); 
                 }
 
-                cout << "HERE" << endl;
-                for (int k = 0; k < groupsCopy.size(); k++) {
-                    for (int l = 0; l < groupsCopy[k].cards.size(); l++) {
-                        cout << groupsCopy[k].cards[l].number << groupsCopy[k].cards[l].color << " ";
-                    }
-                }
-                cout << endl;
+                // for (int k = 0; k < groupsCopy.size(); k++) {
+                //     for (int l = 0; l < groupsCopy[k].cards.size(); l++) {
+                //         cout << groupsCopy[k].cards[l].number << groupsCopy[k].cards[l].color << " ";
+                //     }
+                // }
+                // cout << endl;
 
-                for (int k = 0; k < replaced.second.size(); k++) {
-                    if (counts[k] < count(cardsCopy.begin(), cardsCopy.end(), replaced.second[k])) {
+                // Make sure that the number of each card in hand is not more than the original.
+                for (int k = 0; k < replaced.size(); k++) {
+                    if (counts[k] < count(cardsCopy.begin(), cardsCopy.end(), replaced[k])) {
                         result.first = false;
                         break;
                     }
                 }
 
-                cout << "COND" << result.first << endl;
+                // cout << "COND" << result.first << endl;
 
+                // If the cards are all successfully placed, update groups and cards, and return true.
                 if (result.first) {
                     insert(groupsCopy, current, first, second);
                     groups.clear();
@@ -255,9 +280,65 @@ pair< bool, pair< vector<Group>, vector<Card> > > attempt(vector<Card> &attempts
             // cards.push_back(current);
             cards.push_back(first);
             // return make_pair(false, make_pair(groups, cards));
-        } else {
-            // cards.push_back(current);
-            // return make_pair(false, make_pair(groups, cards));
+        } else {            
+            for (int f = 0; f < firstGroup.size(); f++) {
+                for (int s = 0; s < secondGroup.size(); s++) {
+                    vector<Group> groupsCopy;
+                    vector<Card> cardsCopy;
+
+                    copy(groups.begin(), groups.end(), back_inserter(groupsCopy));
+                    copy(cards.begin(), cards.end(), back_inserter(cardsCopy));
+
+                    vector<Card> replaced, temp;
+                    if (firstGroup[f] == secondGroup[s]) {
+                        Group replace = groupsCopy[firstGroup[f]];
+                        groupsCopy.erase(groupsCopy.begin() + firstGroup[f]);
+
+                        pair< vector<Group>, vector<Card> > replaced = replace.remove(first, second);
+                    } else {
+                        if (firstGroup[f] > secondGroup[s]) {
+                            replaced = removeFromGroup(groupsCopy, firstGroup[f], first);
+                            vector<Card> temp = removeFromGroup(groupsCopy, secondGroup[s], second);
+                        } else {
+                            replaced = removeFromGroup(groupsCopy, secondGroup[s], second);
+                            vector<Card> temp = removeFromGroup(groupsCopy, firstGroup[f], first);
+                        }
+                        replaced.insert(replaced.end(), temp.begin(), temp.end());
+                    }
+                    
+                    pair< bool, pair< vector<Group>, vector<Card> > > result = make_pair(true, make_pair(groupsCopy, cardsCopy));
+
+                    // Keep track of the number of each card in hand.
+                    vector<int> counts(replaced.size());
+                    for (int k = 0; k < replaced.size(); k++) {
+                        counts[k] = count(cardsCopy.begin(), cardsCopy.end(), replaced[k]);
+                    }
+
+                    // Attempt to place the replaced cards on the board.
+                    for (int k = 0; k < replaced.size(); k++) {
+                        cardsCopy.push_back(replaced[k]);
+                        result = attempt(attempts, groupsCopy, cardsCopy, cardsCopy.size() - 1); 
+                    }
+
+                    // Make sure that the number of each card in hand is not more than the original.
+                    for (int k = 0; k < replaced.size(); k++) {
+                        if (counts[k] < count(cardsCopy.begin(), cardsCopy.end(), replaced[k])) {
+                            result.first = false;
+                            break;
+                        }
+                    }
+
+                    // If the cards are all successfully placed, update groups and cards, and return true.
+                    if (result.first) {
+                        insert(groupsCopy, current, first, second);
+                        groups.clear();
+                        cards.clear();
+                        copy(groupsCopy.begin(), groupsCopy.end(), back_inserter(groups));
+                        copy(cardsCopy.begin(), cardsCopy.end(), back_inserter(cards));
+                        return make_pair(true, make_pair(groups, cards));
+                    }
+                }
+            }
         }
     }
     cards.push_back(current);
