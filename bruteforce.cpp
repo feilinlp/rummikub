@@ -345,9 +345,7 @@ pair< bool, pair< vector<Group>, vector<Card> > > attempt(vector<Card> &attempts
     return make_pair(false, make_pair(groups, cards));
 }
 
-pair< vector<Group>, vector<Card> > bfSolve(vector<Card> cards) {
-    vector<Group> groups;
-
+pair< vector<Group>, vector<Card> > bfSolve(vector<Group> groups, vector<Card> cards) {
     bool updated = true;
     while (updated) {
         updated = false;
